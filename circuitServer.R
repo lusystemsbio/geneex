@@ -114,28 +114,30 @@ output$circuitTable <- DT::renderDataTable(
 
 observeEvent(input$updateCircuit,{
     rSet <-  RacipeSE()
-    
+
     sracipeCircuit(rSet) <- circuitVariables$circuit
     annotation(rSet) <- paste(input$circuitName, Sys.Date(),
                               basename(tempfile()), sep = "_")
     circuitVariables$rSet <- rSet
     racipeVals$rSet <- rSet
+    sticVals$rSet <- rSet
     gvVals$rSet <- reactive(sracipeSimulate(rSet,integrate = FALSE,
                                             numModels = 1))
     gvVals$parameterNamesME <- reactive(sracipeGenParamNames(gvVals$rSet()))
     gvVals$parametersME <- reactive(sracipeParams(gvVals$rSet()))
-    
-    
+
+
+
     racipeVals$filterModels <- NULL
     racipeVals$stochData <- NULL
-    
+
     gvVals$icNamesME <- reactive(names(gvVals$rSet()))
     gvVals$icME <- reactive(sracipeIC(gvVals$rSet()))
     gvVals$rSetBifur <- reactive(gvVals$rSet())
-    
+
     validateVars$simExp <- NULL
     validateVars$refClust <- NULL
-    
+
     hideLoadCkt()
 })
 
@@ -146,6 +148,10 @@ observeEvent(input$updateCircuitTable,{
                             sep = "_")
   circuitVariables$rSet <- rSet
   racipeVals$rSet <- rSet
+  
+  sticVals$rSet <- rSet
+  sticVals$topo <- circuitVariables$circuit
+  
   gvVals$rSet <- reactive(sracipeSimulate(rSet,integrate = FALSE,
                                           numModels = 1))
   gvVals$parameterNamesME <- reactive(sracipeGenParamNames(gvVals$rSet()))

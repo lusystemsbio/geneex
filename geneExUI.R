@@ -5,6 +5,7 @@ source('modelExplorer.R', local = TRUE)
 source('racipe.R', local = TRUE)
 source('validate.R', local = TRUE)
 source('database.R', local = TRUE)
+source('sticcc.R', local = TRUE)
 source('about.R', local = TRUE)
 source('forum.R', local = TRUE)
 source('allSessions.R', local = TRUE)
@@ -17,10 +18,10 @@ geneExUI <- fluidPage(tags$div(tags$img(src="logo4.png", height = 40, width = 25
 windowTitle = "GeneEx",
                        tabPanel("Circuit",circuit),
                        tabPanel("GeneVyuha", modelExplorer),
-                       
                        tabPanel("RACIPE", racipe),
                        tabPanel("Validate",validate),
                        tabPanel("Database",database),
+                       tabPanel("STICCC",sticcc),
                        tabPanel("About", about),
                        tabPanel("Forum", forum),
                        tags$head(

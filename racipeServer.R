@@ -46,6 +46,7 @@ observeEvent(input$simulateRacipe, {
     )
     rsRacipe <- sracipeNormalize(rsRacipe)
     racipeVals$rsRacipe <- reactive(rsRacipe)
+    sticVals$rsRacipe <- reactive(rsRacipe)
 
     output$racipeDeterministicText <- renderUI({HTML(
       "Hierarchical clustering and principal component 
