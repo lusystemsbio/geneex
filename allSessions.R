@@ -600,7 +600,7 @@ errorFunc <- function(err, buttonId) {
 
 
 
-.DCComputeTrajectorySCE_2022 <- function(sce, v2=TRUE, useGinv=FALSE, bias=F) {
+.DCComputeTrajectorySCE_2022 <- function(sce, v2=TRUE, useGinv=FALSE, bias=F, subset=NA) {
   
   # Create sign vector
   topo <- sce@metadata$topo
@@ -648,6 +648,11 @@ errorFunc <- function(err, buttonId) {
   
   if(bias) {
     error <- matrix(NA, length(sample_list), 100)
+  }
+  
+  
+  if(!all(is.na(subset))) {
+    sample_list <- sample_list[which(sample_list %in% subset)] # subset by IDs, not index!
   }
   
   weighted_vector_list <- vector(mode = "list", length = length(sample_list))
@@ -985,7 +990,9 @@ errorFunc <- function(err, buttonId) {
                           plotLoadings = F,
                           loadingFactor = 3.5,
                           colorPalette = NA,
-                          scalingFactor = NA) {
+                          scalingFactor = NA,
+                          pca = NA,
+                          type = "v1") {
   
   
   topoName <- sce@metadata$topoName
@@ -993,7 +1000,39 @@ errorFunc <- function(err, buttonId) {
   
   
   # Get 2D plotting coordinates of samples from first 2 cols of position matrix
-  plot_df <- as.data.frame(colData(sce))
+  if(all(is.na(pca))) {
+    plot_df <- as.data.frame(colData(sce))  
+  } else {
+    plot_df <- pca
+    plot_df <- as.data.frame(cbind(plot_df, colData(sce)[,colorVar]))
+    colnames(plot_df)[1:2] <- c("X","Y")
+    colnames(plot_df)[ncol(plot_df)] <- colorVar
+    
+    
+    if(type == "v1") {
+      plot_df$dX <- colData(sce)$dX[which(colData(sce)$SampleID %in% rownames(plot_df))]
+      plot_df$dY <- colData(sce)$dY[which(colData(sce)$SampleID %in% rownames(plot_df))]
+    }
+    if(type == "v2") {
+      plot_df$dX <- colData(sce)$dX_in[which(colData(sce)$SampleID %in% rownames(plot_df))]
+      plot_df$dY <- colData(sce)$dY_in[which(colData(sce)$SampleID %in% rownames(plot_df))]
+    }
+    if(type == "avg+") {
+      plot_df$dX <- colData(sce)$dX[which(colData(sce)$SampleID %in% rownames(plot_df))] +
+        colData(sce)$dX_in[which(colData(sce)$SampleID %in% rownames(plot_df))] / 2
+      plot_df$dY <- colData(sce)$dY[which(colData(sce)$SampleID %in% rownames(plot_df))] + 
+        colData(sce)$dY_in[which(colData(sce)$SampleID %in% rownames(plot_df))] / 2
+      
+    }
+    if(type == "avg-") {
+      plot_df$dX <- colData(sce)$dX[which(colData(sce)$SampleID %in% rownames(plot_df))] -
+        colData(sce)$dX_in[which(colData(sce)$SampleID %in% rownames(plot_df))] / 2
+      plot_df$dY <- colData(sce)$dY[which(colData(sce)$SampleID %in% rownames(plot_df))] - 
+        colData(sce)$dY_in[which(colData(sce)$SampleID %in% rownames(plot_df))] / 2
+    }
+    
+    
+  }
   if(!colorVar %in% colnames(plot_df)) {
     print("Error: colorVar not found in colnames of colData")
   }
@@ -1106,7 +1145,9 @@ errorFunc <- function(err, buttonId) {
                           plotLoadings = plotLoadings,
                           loadingFactor = loadingFactor,
                           scalingFactor = scalingFactor, 
-                          colorVar = "Cluster")
+                          colorVar = "Cluster",
+                          pca = pca,
+                          type = type)
       plotList[[typeNo]] <- plot
       
     }
