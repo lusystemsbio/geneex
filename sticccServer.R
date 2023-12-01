@@ -79,10 +79,10 @@ observeEvent(input$computeTrajectories, {
 
       # Get subset IDs from input
       subsetSize <- ceiling(isolate(input$downsamplingProportion) * nrow(colData(vic)))
-      subsetIDs <- colData(vic)$SampleID[sample(1:nrow(colData(vic)), subsetSize)]
+      #subsetIDs <- colData(vic)$SampleID[sample(1:nrow(colData(vic)), subsetSize)]
       
       # Compute trajectories
-      vic <- .DCComputeTrajectorySCE_2022(vic, v2=T, subset = subsetIDs)
+      vic <- .DCComputeTrajectorySCE_2022(vic, v2=T, subset = subsetSize)
       
       # Store it
       sticVals$vic <- reactive(vic)

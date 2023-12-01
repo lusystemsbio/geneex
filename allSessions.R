@@ -277,6 +277,7 @@ errorFunc <- function(err, buttonId) {
   network <-
     visNetwork::visNetwork(nodes, edges, height = "1000px", 
                            width = "100%", background = "#F8F8F8") %>%
+    visEdges(arrows = "to") %>%
     visOptions(manipulation = FALSE) %>%
     visLayout(randomSeed = 123) %>%
     visPhysics(solver = "forceAtlas2Based", stabilization = FALSE)
@@ -650,24 +651,23 @@ errorFunc <- function(err, buttonId) {
     error <- matrix(NA, length(sample_list), 100)
   }
   
-  
-  if(!all(is.na(subset))) {
-    sample_list <- sample_list[which(sample_list %in% subset)] # subset by IDs, not index!
+  numSamples <- length(sample_list)
+  if(!is.na(subset)) {
+    #sample_list <- sample_list[which(sample_list %in% subset)] # subset by IDs, not index!
+    numSamples <- subset
   }
   
   weighted_vector_list <- vector(mode = "list", length = length(sample_list))
   weighted_vector_list_in <- vector(mode = "list", length = length(sample_list))
   det_list <- list()
-  pb = txtProgressBar(min = 0, max = length(sample_list), 
+  pb = txtProgressBar(min = 0, max = numSamples, 
                       initial = 0, style = 3)
   stepi <- 0
   for(query_point in sample_list) {
     
-    
-    ## Update progress bar
-    stepi <- stepi+1
-    setTxtProgressBar(pb, stepi)
-    
+    if(stepi > numSamples) {
+      break
+    }
     
     ## Compute vector
     rs_list <- .DCComputeVector(sce, query_point, v2 = v2, useGinv = useGinv, bias = bias)
@@ -688,6 +688,11 @@ errorFunc <- function(err, buttonId) {
     if(length(rs_list[["b_vec"]]) == 1) {
       next
     } 
+    
+    
+    ## Update progress bar
+    stepi <- stepi+1
+    setTxtProgressBar(pb, stepi)
     
     
     if(bias) {
