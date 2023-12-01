@@ -10,9 +10,12 @@ source('about.R', local = TRUE)
 source('forum.R', local = TRUE)
 source('allSessions.R', local = TRUE)
 
+#geneExUI <- fluidPage(tags$div(tags$img(src="logo4.png", height = 40, width = 250, style="margin-right:200px;"),
+#                            tags$img(src="JAX.png", height = 40, width = 170, style="float:center; margin-left:0px;margin-right:5px;"),
+#                             tags$img(src="Rice_CTBP_2Color_Logo.jpg", height = 40, width = 180, style="float:center; margin-left:0px;margin-right:5px;")
 geneExUI <- fluidPage(tags$div(tags$img(src="logo4.png", height = 40, width = 250, style="margin-right:200px;"),
-                            tags$img(src="JAX.png", height = 40, width = 170, style="float:center; margin-left:0px;margin-right:5px;"),
-                             tags$img(src="Rice_CTBP_2Color_Logo.jpg", height = 40, width = 180, style="float:center; margin-left:0px;margin-right:5px;")
+                            tags$img(src="lulab.png", height = 40, width = 170, style="float:center; margin-left:0px;margin-right:5px;"),
+                             tags$img(src="neu_black.svg", height = 40, width = 180, style="float:center; margin-left:0px;margin-right:5px;")
 ),
   navbarPage(title="",
 windowTitle = "GeneEx",
