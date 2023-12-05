@@ -25,6 +25,7 @@ suppressPackageStartupMessages({
   library(metR)
   library(ggnewscale)
   library(gridExtra)
+  library(patchwork)
 })
 
 plotColor <- c("#5E4FA2", "#4F61AA", "#4173B3", "#3386BC", "#4198B6",
@@ -619,8 +620,8 @@ errorFunc <- function(err, buttonId) {
   } else {
     nPCs <- sce@metadata$params$nPCs
   }
-  posMat <- reducedDim(sce, "PCA")[colnames(sce),]
-  posMat <- posMat[,1:nPCs]
+  posMat <- reducedDim(sce, "PCA")[colnames(sce),1:nPCs]
+  #posMat <- posMat[,1:nPCs]
   posList <- colnames(posMat)
   rownames(posMat) <- colnames(sce)
   
@@ -1161,14 +1162,85 @@ errorFunc <- function(err, buttonId) {
   }
   
   
+  ##### PLOTTING OPTION 1 #####
+  # Redundant axis titles, plot titles, and legends
   # Now that we have a list of all four plots, we can arrange them
-  grid.arrange(
-    grobs = lapply(1:4, function(i) {
-      gridExtra::arrangeGrob(plotList[[i]] + ggplot2::ggtitle(titles[i]), 
-                             top = titles[i])
-    }),
-    ncol = 2
+  # grid.arrange(
+  #   grobs = lapply(1:4, function(i) {
+  #     gridExtra::arrangeGrob(plotList[[i]], #+ ggplot2::ggtitle(titles[i]),
+  #                            top = titles[i])
+  #   }),
+  #   ncol = 2
+  # )
+  
+  ##### PLOTTING OPTION 2 #####
+  # Broken in that it just removes axis titles, but doesn't replace them at the higher level
+  # # Remove axis titles and legends from individual plots
+  # for (i in 1:length(plotList)) {
+  #   plotList[[i]] <- plotList[[i]] + theme(
+  #     legend.position = "none",  # Remove legend
+  #     axis.title.x = element_blank(),  # Remove x-axis title
+  #     axis.title.y = element_blank()   # Remove y-axis title
+  #   )
+  # }
+  # 
+  # # Combine the plots into a 2x2 grid and add shared legends and axis titles
+  # combined_plot <- (plotList[[1]] + plotList[[2]]) / (plotList[[3]] + plotList[[4]]) + 
+  #   plot_layout(guides = 'collect') +
+  #   plot_annotation(
+  #     title = 'Circuit Transition Predictions',
+  #     caption = 'TEST Caption',
+  #     theme = theme(
+  #       plot.title = element_text(size = 14),
+  #       plot.caption = element_text(size = 8)
+  #     )
+  #   )
+  # 
+  # # Print the combined plot
+  # print(combined_plot)
+  
+  
+  ##### PLOTTING OPTION 3 #####
+  library(gridExtra)
+  library(cowplot)
+  library(ggplot2)
+  
+  
+  # Extract the legend from the fourth plot
+  legend <- get_legend(plotList[[4]])
+  
+  # Remove legends and axis titles from all plots and add individual titles
+  for (i in 1:4) {
+    plotList[[i]] <- plotList[[i]] +
+      ggplot2::theme(legend.position = "none",
+                     axis.title.x = element_blank(),
+                     axis.title.y = element_blank()) +
+      ggtitle(titles[i])
+  }
+  
+  # Align the plots in a 2x2 grid without the legend
+  plot_grid_combined <- plot_grid(plotlist = plotList, ncol = 2, align = 'hv')
+  
+  # Combine the grid of plots with the legend
+  final_plot <- plot_grid(plot_grid_combined, legend, ncol = 2, rel_widths = c(1, 0.2))
+  
+  # Create labels for the common axis titles
+  pc1_weight <- round(100*vic@metadata$pca_summary$importance[2,1],2)
+  pc2_weight <- round(100*vic@metadata$pca_summary$importance[2,2],2)
+  plot_xlab <- paste("PC1 (",pc1_weight,"%)",sep="")
+  plot_ylab <- paste("PC2 (",pc2_weight,"%)",sep="")  
+  x_title <- cowplot::draw_label(plot_xlab, fontface = 'bold')
+  y_title <- cowplot::draw_label(plot_ylab, fontface = 'bold', angle = 90)
+  
+  # Arrange the common axis titles and the final plot
+  final_layout <- cowplot::plot_grid(
+    cowplot::plot_grid(NULL, y_title, NULL, nrow = 3, rel_heights = c(1, 10, 1)),
+    cowplot::plot_grid(NULL, final_plot, x_title, nrow = 3, rel_heights = c(1, 10, 1)),
+    ncol = 3,
+    rel_widths = c(1, 10, 1)
   )
   
+  # Print the final layout
+  print(final_layout)
   
 }

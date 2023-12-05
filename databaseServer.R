@@ -10,7 +10,7 @@ responseMsg2 <-  eventReactive(input$shinySelectGeneDb,
 output$shinySelectedNetworkGene <- renderText(responseMsg1())
 output$shinySelectedNetwork <- renderText(responseMsg2())
 databaseVals <- reactiveValues()
-databaseVals$databaseTableAll <- readRDS("data/GeneExDatabase_10112019.RDS")
+databaseVals$databaseTableAll <- readRDS("data/GeneExDatabase_12052023.RDS")
 databaseVals$databaseTable <- reactive(databaseVals$databaseTableAll)
 
 observeEvent(input$biologicalDB,{
@@ -25,7 +25,7 @@ observeEvent(input$allDB,{
   databaseVals$databaseTable <- reactive(databaseVals$databaseTableAll)
 })
 
-databaseVals$databaseTable <- reactive(readRDS("data/GeneExDatabase_10112019.RDS"))
+databaseVals$databaseTable <- reactive(readRDS("data/GeneExDatabase_12052023.RDS"))
 
 
 output$databaseTable <- DT::renderDT({
@@ -79,6 +79,9 @@ observeEvent(input$loadNetworkDatabase, {
   racipeVals$rSet <- rSet
   racipeVals$filterModels <- NULL
   racipeVals$stochData <- NULL
+  
+  sticVals$rSet <- rSet
+  sticVals$topo <- circuitVariables$circuit
   
   gvVals$rSet <- reactive(sracipeSimulate(rSet,integrate = FALSE,
                                           numModels = 1))
