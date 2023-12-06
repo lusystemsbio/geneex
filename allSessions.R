@@ -1024,17 +1024,17 @@ errorFunc <- function(err, buttonId) {
       plot_df$dY <- colData(sce)$dY_in[which(colData(sce)$SampleID %in% rownames(plot_df))]
     }
     if(type == "avg+") {
-      plot_df$dX <- colData(sce)$dX[which(colData(sce)$SampleID %in% rownames(plot_df))] +
-        colData(sce)$dX_in[which(colData(sce)$SampleID %in% rownames(plot_df))] / 2
-      plot_df$dY <- colData(sce)$dY[which(colData(sce)$SampleID %in% rownames(plot_df))] + 
-        colData(sce)$dY_in[which(colData(sce)$SampleID %in% rownames(plot_df))] / 2
+      plot_df$dX <- (colData(sce)$dX[which(colData(sce)$SampleID %in% rownames(plot_df))] +
+        colData(sce)$dX_in[which(colData(sce)$SampleID %in% rownames(plot_df))]) / 2
+      plot_df$dY <- (colData(sce)$dY[which(colData(sce)$SampleID %in% rownames(plot_df))] + 
+        colData(sce)$dY_in[which(colData(sce)$SampleID %in% rownames(plot_df))]) / 2
       
     }
     if(type == "avg-") {
-      plot_df$dX <- colData(sce)$dX[which(colData(sce)$SampleID %in% rownames(plot_df))] -
-        colData(sce)$dX_in[which(colData(sce)$SampleID %in% rownames(plot_df))] / 2
-      plot_df$dY <- colData(sce)$dY[which(colData(sce)$SampleID %in% rownames(plot_df))] - 
-        colData(sce)$dY_in[which(colData(sce)$SampleID %in% rownames(plot_df))] / 2
+      plot_df$dX <- (colData(sce)$dX[which(colData(sce)$SampleID %in% rownames(plot_df))] -
+        colData(sce)$dX_in[which(colData(sce)$SampleID %in% rownames(plot_df))]) / 2
+      plot_df$dY <- (colData(sce)$dY[which(colData(sce)$SampleID %in% rownames(plot_df))] - 
+        colData(sce)$dY_in[which(colData(sce)$SampleID %in% rownames(plot_df))]) / 2
     }
     
     
@@ -1213,8 +1213,9 @@ errorFunc <- function(err, buttonId) {
   for (i in 1:4) {
     plotList[[i]] <- plotList[[i]] +
       ggplot2::theme(legend.position = "none",
-                     axis.title.x = element_blank(),
-                     axis.title.y = element_blank()) +
+                     axis.title.x = element_text(size=16),
+                     axis.title.y = element_text(size=16),
+                     axis.text = element_text(size=16)) +
       ggtitle(titles[i])
   }
   
@@ -1224,23 +1225,23 @@ errorFunc <- function(err, buttonId) {
   # Combine the grid of plots with the legend
   final_plot <- plot_grid(plot_grid_combined, legend, ncol = 2, rel_widths = c(1, 0.2))
   
-  # Create labels for the common axis titles
-  pc1_weight <- round(100*vic@metadata$pca_summary$importance[2,1],2)
-  pc2_weight <- round(100*vic@metadata$pca_summary$importance[2,2],2)
-  plot_xlab <- paste("PC1 (",pc1_weight,"%)",sep="")
-  plot_ylab <- paste("PC2 (",pc2_weight,"%)",sep="")  
-  x_title <- cowplot::draw_label(plot_xlab, fontface = 'bold')
-  y_title <- cowplot::draw_label(plot_ylab, fontface = 'bold', angle = 90)
-  
-  # Arrange the common axis titles and the final plot
-  final_layout <- cowplot::plot_grid(
-    cowplot::plot_grid(NULL, y_title, NULL, nrow = 3, rel_heights = c(1, 10, 1)),
-    cowplot::plot_grid(NULL, final_plot, x_title, nrow = 3, rel_heights = c(1, 10, 1)),
-    ncol = 3,
-    rel_widths = c(1, 10, 1)
-  )
+  # # Create labels for the common axis titles
+  # pc1_weight <- round(100*vic@metadata$pca_summary$importance[2,1],2)
+  # pc2_weight <- round(100*vic@metadata$pca_summary$importance[2,2],2)
+  # plot_xlab <- paste("PC1 (",pc1_weight,"%)",sep="")
+  # plot_ylab <- paste("PC2 (",pc2_weight,"%)",sep="")
+  # x_title <- cowplot::draw_label(plot_xlab, fontface = 'bold')
+  # y_title <- cowplot::draw_label(plot_ylab, fontface = 'bold', angle = 90)
+  # 
+  # # Arrange the common axis titles and the final plot
+  # final_layout <- cowplot::plot_grid(
+  #   cowplot::plot_grid(NULL, y_title, NULL, nrow = 3, rel_heights = c(1, 10, 1)),
+  #   cowplot::plot_grid(NULL, final_plot, x_title, nrow = 3, rel_heights = c(1, 10, 1)),
+  #   ncol = 3,
+  #   rel_widths = c(1, 10, 1)
+  # )
   
   # Print the final layout
-  print(final_layout)
+  print(final_plot)
   
 }
